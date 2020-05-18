@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -15,11 +13,12 @@ function rowToObject(row) {
 }
 
 app.get('/song/:id', (request, response) => {
-        const query = 'SELECT song_note FROM notes WHERE song_id = ? AND is_deleted = 0';
+        const query = 'SELECT song_note FROM notes WHERE song_id = ?';
         const params = [request.params.id];
         connection.query(query, params, (error, rows) => {
                 response.send({
                         ok: true,
+                        songid: request.params.id,
                         songs: rows.map(rowToObject),
                 });
         });
@@ -49,7 +48,7 @@ app.patch('/song/:song_id/:id', (request, response) => {
 
 
 app.delete('/song/:song_id', (request, response) => {
-        const query = 'UPDATE notes SET is_deleted = 1 WHERE song_id = ?'
+        const query = 'DELETE FROM notes WHERE song_id = ?'
         const params = [request.params.song_id];
         connection.query(query, params, (error, result) => {
                 response.send({
